@@ -1,0 +1,357 @@
+include /home/xu/c-sdk-v3.0.1/tools/build-rules/funcs.mk
+
+SHELL   := bash
+Q       ?= @
+VPATH   := /home/xu/c-sdk-v3.0.1/.O/src/infra /home/xu/c-sdk-v3.0.1/.O/src/dev_sign /home/xu/c-sdk-v3.0.1/.O/src/mqtt 
+
+EXT_IFLAGS  := \
+    -Itools/build-rules/misc \
+    -Isrc \
+    -Isrc/wifi_provision \
+    -Isrc/wifi_provision/smartconfig \
+    -Isrc/wifi_provision/ht40 \
+    -Isrc/wifi_provision/p2p \
+    -Isrc/wifi_provision/phone_ap \
+    -Isrc/wifi_provision/router_ap \
+    -Isrc/wifi_provision/zero_config \
+    -Isrc/wifi_provision/frameworks \
+    -Isrc/wifi_provision/frameworks/utils \
+    -Isrc/wifi_provision/frameworks/statics \
+    -Isrc/wifi_provision/frameworks/aplist \
+    -Isrc/wifi_provision/frameworks/ieee80211 \
+    -Isrc/wifi_provision/dev_ap \
+    -Isrc/mqtt \
+    -Isrc/mqtt/examples \
+    -Isrc/mqtt/impl \
+    -Isrc/http2 \
+    -Isrc/http2/examples \
+    -Isrc/dev_model \
+    -Isrc/dev_model/server \
+    -Isrc/dev_model/alcs \
+    -Isrc/dev_model/deprecated \
+    -Isrc/dev_model/client \
+    -Isrc/dev_model/examples \
+    -Isrc/dev_model/examples/data \
+    -Isrc/dynamic_register \
+    -Isrc/dynamic_register/examples \
+    -Isrc/dev_reset \
+    -Isrc/dev_reset/examples \
+    -Isrc/atm \
+    -Isrc/infra \
+    -Isrc/dev_bind \
+    -Isrc/dev_bind/impl \
+    -Isrc/dev_bind/impl/awss_reset \
+    -Isrc/dev_bind/impl/os \
+    -Isrc/dev_sign \
+    -Isrc/dev_sign/examples \
+    -Isrc/ota \
+    -Isrc/ota/examples \
+    -Isrc/http \
+    -Isrc/http/examples \
+    -Isrc/coap \
+    -Isrc/coap/server \
+    -Isrc/coap/client \
+    -Isrc/coap/CoAPPacket \
+    -Isrc/coap/examples \
+
+IFLAGS  := \
+    -Isrc/infra \
+    -Isrc/dev_sign \
+    -Isrc/dev_sign/examples \
+    -Isrc/mqtt \
+    -Isrc/mqtt/examples \
+    -Isrc/mqtt/impl \
+    -Iwrappers \
+    -Iwrappers/atm \
+    -Iwrappers/atm/at_mqtt \
+    -Iwrappers/atm/at_tcp \
+    -Iwrappers/tls \
+    -Iwrappers/os \
+    -Iwrappers/os/nos \
+    -Iwrappers/os/freertos \
+    -Iwrappers/os/nucleus \
+    -Iwrappers/os/ubuntu \
+    -Iexternal_libs/mbedtls \
+    -Iexternal_libs/mbedtls/include \
+    -Iexternal_libs/mbedtls/include/mbedtls \
+    -Iexternal_libs/mbedtls/library \
+
+CFLAGS  := \
+     \
+    -DCONFIG_MBEDTLS_DEBUG_LEVEL=0 \
+    -DCONFIG_MQTT_RX_MAXLEN=5000 \
+    -DDEVICE_MODEL_CLASSIC \
+    -DDEV_SIGN \
+    -DFORCE_SSL_VERIFY \
+    -DINFRA_COMPAT \
+    -DINFRA_LIST \
+    -DINFRA_LOG \
+    -DINFRA_LOG_ALL_MUTED \
+    -DINFRA_LOG_MUTE_CRT \
+    -DINFRA_LOG_MUTE_DBG \
+    -DINFRA_LOG_MUTE_ERR \
+    -DINFRA_LOG_MUTE_FLW \
+    -DINFRA_LOG_MUTE_INF \
+    -DINFRA_LOG_MUTE_WRN \
+    -DINFRA_LOG_NETWORK_PAYLOAD \
+    -DINFRA_NET \
+    -DINFRA_REPORT \
+    -DINFRA_SHA256 \
+    -DINFRA_STRING \
+    -DINFRA_TIMER \
+    -DMQTT_COMM_ENABLED \
+    -DMQTT_DEFAULT_IMPL \
+    -DMQTT_DIRECT \
+    -DPLATFORM_HAS_DYNMEM \
+    -DPLATFORM_HAS_STDINT \
+    -DSDK_TEAM_TEST \
+    -DWITH_MEM_STATS=0 \
+    -DWITH_MEM_STATS_PER_MODULE=0 \
+    -DWITH_MQTT_DYN_BUF=1 \
+    -DWITH_MQTT_JSON_FLOW=1 \
+    -DWITH_MQTT_SUB_SHORTCUT=1 \
+    -DWITH_MQTT_ZIP_TOPIC=1 \
+    -D_PLATFORM_IS_LINUX_ \
+    -D__UBUNTU_SDK_DEMO__ \
+    -Iwrappers \
+    -Os \
+    -Wall \
+    -Wdeclaration-after-statement \
+    -Werror \
+    -Wno-unused \
+    -ansi \
+    -g3 \
+    -rdynamic \
+
+STAMP_LCOV  := /home/xu/c-sdk-v3.0.1/.O/.coverage.done
+
+.PHONY: all
+all: /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_sdk.a /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_hal.a /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_tls.a  /home/xu/c-sdk-v3.0.1/.O/usr/bin/dev-sign-example /home/xu/c-sdk-v3.0.1/.O/usr/bin/mqtt-example 
+	$(Q)cp -rf /iot_import.h /iot_export.h /imports /exports  /home/xu/c-sdk-v3.0.1/.O/usr/include 2>/dev/null || true
+	@rm -f *.gcda *.gcno $$(find /home/xu/c-sdk-v3.0.1/tools/build-rules -name "*.o")
+
+	@if [ "$(WITH_LCOV)" = "1" ]; then \
+	    mkdir -p $$(dirname $(STAMP_LCOV)); \
+	    touch $(STAMP_LCOV); \
+	else \
+	    rm -f $(STAMP_LCOV); \
+	fi
+
+ifneq (,$(findstring gcc,$(CC)))
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_timer.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_preauth.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_json_parser.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_net.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_defs.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_sha1.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_aes.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_log.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_report.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_string.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_prt_nwk_payload.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_mem_stats.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_compat.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_md5.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_sha256.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_cjson.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_httpc.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/dev_sign/dev_sign_mqtt.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/mqtt/mqtt_api.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/iotx_mqtt_client.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTConnectClient.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTDeserializePublish.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTPacket.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTSerializePublish.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTSubscribeClient.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTUnsubscribeClient.d
+endif
+
+/home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_sdk.a: \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_timer.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_preauth.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_json_parser.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_net.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_defs.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_sha1.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_aes.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_log.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_report.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_string.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_prt_nwk_payload.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_mem_stats.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_compat.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_md5.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_sha256.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_cjson.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/infra/infra_httpc.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/dev_sign/dev_sign_mqtt.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/mqtt/mqtt_api.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/iotx_mqtt_client.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTConnectClient.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTDeserializePublish.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTPacket.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTSerializePublish.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTSubscribeClient.o \
+    /home/xu/c-sdk-v3.0.1/.O/src/mqtt/impl/MQTTUnsubscribeClient.o \
+
+	$(Q)mkdir -p $$(dirname $@)
+	$(Q)$(call Brief_Log,"AR",$$(basename $@),"...")
+	$(Q)ar -rcs $@ $^ 2>/dev/null
+
+%.o:
+	$(Q)$(call Brief_Log,"CC",$$(basename $@),"...")
+	$(Q)mkdir -p $$(dirname $@)
+	$(Q)S=$$(echo $@|sed 's,/home/xu/c-sdk-v3.0.1/.O,/home/xu/c-sdk-v3.0.1,1'); \
+    if echo $${S//.o/.c} | grep -q 'mbedtls\|HAL_\|hal-impl'; then \
+        gcc -c \
+            -o $@ \
+            $(filter-out -ansi,$(CFLAGS)) \
+            $(IFLAGS) \
+            $${S//.o/.c}; \
+    else \
+        gcc -c \
+            -o $@ \
+            $(CFLAGS) \
+            $(IFLAGS) \
+            $${S//.o/.c}; \
+    fi
+
+ifneq (,$(findstring gcc,$(CC)))
+%.d:
+	@\
+( \
+	D=$$(dirname $@|sed 's,/home/xu/c-sdk-v3.0.1/.O,/home/xu/c-sdk-v3.0.1,1'); \
+	F=$$(basename $@); \
+	F=$${F/.d/.c}; \
+	mkdir -p $$(dirname $@); \
+	gcc -MM -I$(CURDIR) \
+	    $(IFLAGS) \
+	    $(filter-out -ansi,$(CFLAGS)) \
+	$${D}/$${F} > $@.$$$$; \
+	sed -i 's!$(shell basename $*)\.o[ :]!$*.o:!1' $@.$$$$; \
+	mv $@.$$$$ $@; \
+)
+endif
+
+sinclude /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_AWSS_linux.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_Crypt_Linux.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_FS_Linux.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_KV_linux.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_OS_linux.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_TCP_linux.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_UDP_linux.d
+
+/home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_hal.a: \
+    /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_AWSS_linux.o \
+    /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_Crypt_Linux.o \
+    /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_FS_Linux.o \
+    /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_KV_linux.o \
+    /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_OS_linux.o \
+    /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_TCP_linux.o \
+    /home/xu/c-sdk-v3.0.1/.O/wrappers/os/ubuntu/HAL_UDP_linux.o \
+
+	$(Q)mkdir -p $$(dirname $@)
+	$(Q)$(call Brief_Log,"AR",$$(basename $@),"...")
+	$(Q)ar -rcs $@ $^ 2>/dev/null
+
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/platform.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ctr_drbg.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/pk_wrap.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/entropy.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/error.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/pk.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/sha1.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/oid.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/timing.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/entropy_poll.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/cipher.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/rsa.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/md_wrap.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/sha256.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ssl_cli.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/asn1parse.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ssl_tls.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/x509.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/x509_crt.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/debug.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/md.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/base64.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/net_sockets.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/aes.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/cipher_wrap.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/bignum.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/pkparse.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ssl_ciphersuites.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/pem.d
+sinclude /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ssl_cookie.d
+
+/home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_tls.a: \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/platform.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ctr_drbg.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/pk_wrap.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/entropy.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/error.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/pk.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/sha1.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/oid.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/timing.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/entropy_poll.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/cipher.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/rsa.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/md_wrap.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/sha256.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ssl_cli.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/asn1parse.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ssl_tls.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/x509.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/x509_crt.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/debug.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/md.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/base64.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/net_sockets.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/aes.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/cipher_wrap.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/bignum.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/pkparse.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ssl_ciphersuites.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/pem.o \
+    /home/xu/c-sdk-v3.0.1/.O/external_libs/mbedtls/library/ssl_cookie.o \
+
+	$(Q)mkdir -p $$(dirname $@)
+	$(Q)$(call Brief_Log,"AR",$$(basename $@),"...")
+	$(Q)ar -rcs $@ $^ 2>/dev/null
+
+/home/xu/c-sdk-v3.0.1/.O/usr/bin/dev-sign-example: \
+     \
+    /home/xu/c-sdk-v3.0.1/src/dev_sign/examples/dev_sign_example.c \
+    /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_sdk.a \
+    /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_hal.a \
+    /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_tls.a \
+
+	$(Q)$(call Brief_Log,"LD",$$(basename $@),"...")
+	$(Q)gcc \
+        -o $@ \
+        $(IFLAGS) \
+        $(filter-out -Wdeclaration-after-statement -ansi,$(CFLAGS)) \
+        $(filter-out %.a,$^) \
+         \
+        -L/home/xu/c-sdk-v3.0.1/.O/usr/lib \
+        -lpthread -lrt -liot_sdk -liot_hal -liot_tls -L/home/xu/c-sdk-v3.0.1/.O/usr/lib -L/home/xu/c-sdk-v3.0.1/tools/prebuilt/ubuntu/libs -lpthread -lrt -lgcov 
+
+/home/xu/c-sdk-v3.0.1/.O/usr/bin/mqtt-example: \
+     \
+    /home/xu/c-sdk-v3.0.1/src/mqtt/examples/mqtt_example.c \
+    /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_sdk.a \
+    /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_hal.a \
+    /home/xu/c-sdk-v3.0.1/.O/usr/lib/libiot_tls.a \
+
+	$(Q)$(call Brief_Log,"LD",$$(basename $@),"...")
+	$(Q)gcc \
+        -o $@ \
+        $(IFLAGS) \
+        $(filter-out -Wdeclaration-after-statement -ansi,$(CFLAGS)) \
+        $(filter-out %.a,$^) \
+         \
+        -L/home/xu/c-sdk-v3.0.1/.O/usr/lib \
+        -lpthread -lrt -liot_sdk -liot_hal -liot_tls -L/home/xu/c-sdk-v3.0.1/.O/usr/lib -L/home/xu/c-sdk-v3.0.1/tools/prebuilt/ubuntu/libs -lpthread -lrt -lgcov 
+
